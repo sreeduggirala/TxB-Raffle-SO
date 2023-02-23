@@ -19,7 +19,7 @@ error WinnerAlreadyChosen();
 error OnlyNFTOwnerCanAccess();
 error NoBalance();
 error TooShort();
-error OnlySupraOracles();
+error OnlyforSupraOracles();
 
 interface ISupraRouter {
     function generateRequest(
@@ -50,7 +50,6 @@ contract Raffle is Ownable {
     //SupraOracles Content
     ISupraRouter internal supraRouter;
     address supraAddress = address(0xE1Ac002c6149585a6f499e6C2A03f15491Cb0D04); //Initialized to ETH Goerli
-    uint256 internal randomNumber;
     bool public randomNumberRequested;
 
     // Player Content
@@ -176,7 +175,7 @@ contract Raffle is Ownable {
         uint256[] memory _rngList
     ) external nftHeld enoughTickets {
         if (msg.sender != supraAddress) {
-            revert OnlySupraOracles();
+            revert OnlyforSupraOracles();
         }
 
         if (address(this).balance == 0) {
@@ -186,8 +185,29 @@ contract Raffle is Ownable {
         if (randomNumberRequested == false) {
             revert RaffleOngoing();
         }
-        randomNumber = _rngList[0];
-        winner = players[randomNumber % players.length];
+
+        uint i = 0;
+        uint256 totalBought;
+
+        //calculates total tickets bought
+        while (i < players.length) {
+            totalBought += playerTickets[players[i]];
+            i++;
+        }
+
+        uint256 randomNumber = _rngList[0] % totalBought;
+        uint256 ii;
+        while (ii < players.length) {
+            randomNumber -= playerTickets[players[ii]];
+
+            if (randomNumber <= 0) {
+                winner = players[ii];
+                break;
+            } else {
+                ii++;
+            }
+        }
+
         payable(nftOwner).transfer((address(this).balance * 975) / 1000);
         IERC721(nftContract).safeTransferFrom(address(this), winner, nftID);
         payable(owner()).transfer((address(this).balance)); // 2.5% commission of ticket fees
