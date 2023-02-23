@@ -201,7 +201,7 @@ contract Raffle is Ownable {
             randomNumber -= playerTickets[players[ii]];
 
             if (randomNumber <= 0) {
-                winner = players[ii];
+                winner = payable(players[ii]);
                 break;
             } else {
                 ii++;
