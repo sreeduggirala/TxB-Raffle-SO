@@ -128,31 +128,35 @@ contract Raffle is Ownable {
             revert InsufficientAmount();
         }
 
-        for (uint256 i = 0; i < _numTickets; i++) {
-            players.push(payable(msg.sender));
-        }
-
         playerTickets[msg.sender] += _numTickets;
+        players.push(payable(msg.sender));
 
         emit RaffleEntered(msg.sender, _numTickets);
     }
 
     function exitRaffle(uint256 _numTickets) external nftHeld vrfCalled {
-        if (playerTickets[msg.sender] < _numTickets) {
+        if (
+            playerTickets[msg.sender] < _numTickets ||
+            playerTickets[msg.sender] == 0
+        ) {
             revert InsufficientTicketsBought();
         }
 
-        uint256 nt = _numTickets;
+        if (_numTickets == 0) {
+            revert InvalidTicketAmount();
+        }
         uint256 i = 0;
-        while (i < players.length && nt > 0) {
+        while (i < players.length) {
             if (players[i] != msg.sender) {
                 i++;
             } else {
-                players[i] = players[players.length - 1];
-                players.pop();
-                payable(msg.sender).transfer(ticketFee);
-                nt--;
-                playerTickets[msg.sender] = playerTickets[msg.sender] -= 1;
+                payable(msg.sender).transfer(ticketFee * _numTickets);
+                playerTickets[msg.sender] -= _numTickets;
+
+                if (playerTickets[msg.sender] == 0) {
+                    players[i] = players[players.length - 1];
+                    players.pop();
+                }
             }
         }
 
