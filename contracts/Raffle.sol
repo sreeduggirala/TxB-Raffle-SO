@@ -114,12 +114,17 @@ contract Raffle is Ownable {
         _;
     }
 
-    // Enter the NFT raffle
-    function enterRaffle(uint256 _numTickets) external payable nftHeld {
+    modifier overCheck() {
         if (block.timestamp > endTime) {
             revert RaffleNotOpen();
         }
+        _;
+    }
 
+    // Enter the NFT raffle
+    function enterRaffle(
+        uint256 _numTickets
+    ) external payable nftHeld overCheck {
         if (_numTickets <= 0) {
             revert InvalidTicketAmount();
         }
@@ -173,7 +178,7 @@ contract Raffle is Ownable {
 
     function requestRandomNumber(
         uint8 _rngCount
-    ) public nftHeld enoughTickets vrfCalled {
+    ) public nftHeld enoughTickets vrfCalled overCheck {
         _rngCount = 1;
         supraRouter.generateRequest("disbursement(uint256, uint256[])", 1, 1);
         randomNumberRequested = true;
@@ -204,7 +209,7 @@ contract Raffle is Ownable {
             i++;
         }
 
-        uint256 randomNumber = _rngList[0] % totalBought;
+        randomNumber = _rngList[0] % totalBought;
         uint256 ii;
         while (ii < players.length) {
             randomNumber -= playerTickets[players[ii]];
