@@ -217,9 +217,10 @@ contract Raffle is Ownable {
     function deleteRaffle() external onlynftOwner nftHeld vrfCalled {
         IERC721(nftContract).safeTransferFrom(address(this), msg.sender, nftID);
 
-        for (uint256 i = players.length - 1; i >= 0; i--) {
-            payable(players[i]).transfer(ticketFee);
-            players.pop();
+        uint256 i = 0;
+        while (i < players.length) {
+            payable(players[i]).transfer(ticketFee * playerTickets[players[i]]);
+            players[i] = players[players.length - 1];
         }
     }
 }
