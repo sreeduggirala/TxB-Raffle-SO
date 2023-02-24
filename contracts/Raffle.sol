@@ -115,7 +115,7 @@ contract Raffle is Ownable {
     }
 
     modifier overCheck() {
-        if (block.timestamp > endTime) {
+        if (block.timestamp > endTime || block.timestamp < startTime) {
             revert RaffleNotOpen();
         }
         _;
