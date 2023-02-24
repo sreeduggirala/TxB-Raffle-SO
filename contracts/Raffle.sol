@@ -151,22 +151,7 @@ contract Raffle is Ownable {
             revert InsufficientTicketsBought();
         }
 
-
-        // uint256 nt = _numTickets;
-        // uint256 i = 0;
-        // while (i < players.length && nt > 0) {
-        //     if (players[i] != msg.sender) {
-        //         i++;
-        //     } else {
-        //         players[i] = players[players.length - 1];
-        //         players.pop();
-        //         payable(msg.sender).transfer(ticketFee);
-        //         nt--;
-        //         playerTickets[msg.sender] = playerTickets[msg.sender] -= 1;
-        //     }
-        // }
-
-        //if refunding all, remove from array and 
+        //if refunding all, remove from array and set mapping to zero, othewise just decrement mapping
         if(playerTickets[msg.sender] == _numTickets) {
             for(uint256 i = 0; i < players.length; i++) {
                 if(players[i] == payable(msg.sender)) {
