@@ -115,7 +115,7 @@ contract Raffle is Ownable {
 
     // Enter the NFT raffle
     function enterRaffle(uint256 _numTickets) external payable nftHeld {
-        if (block.timestamp > endTime) {
+        if (block.timestamp > endTime || block.timestamp < startTime) {
             revert RaffleNotOpen();
         }
 
