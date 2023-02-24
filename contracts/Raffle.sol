@@ -130,16 +130,15 @@ contract Raffle is Ownable {
 
         //adds player to player array only if it is not in there already
         bool found = false;
-        for(uint256 i = 0; i < players.length; i++) {
-            if(players[i] == payable(msg.sender)) {
+        for (uint256 i = 0; i < players.length; i++) {
+            if (players[i] == payable(msg.sender)) {
                 found = true;
                 break;
             }
         }
-        if(!found) {
+        if (!found) {
             players.push(payable(msg.sender));
         }
-        
 
         playerTickets[msg.sender] += _numTickets;
 
@@ -147,14 +146,17 @@ contract Raffle is Ownable {
     }
 
     function exitRaffle(uint256 _numTickets) external nftHeld vrfCalled {
-        if (playerTickets[msg.sender] < _numTickets || playerTickets[msg.sender] == 0) {
+        if (
+            playerTickets[msg.sender] < _numTickets ||
+            playerTickets[msg.sender] == 0
+        ) {
             revert InsufficientTicketsBought();
         }
 
         //if refunding all, remove from array and set mapping to zero, othewise just decrement mapping
-        if(playerTickets[msg.sender] == _numTickets) {
-            for(uint256 i = 0; i < players.length; i++) {
-                if(players[i] == payable(msg.sender)) {
+        if (playerTickets[msg.sender] == _numTickets) {
+            for (uint256 i = 0; i < players.length; i++) {
+                if (players[i] == payable(msg.sender)) {
                     players[i] = players[players.length - 1];
                     players.pop();
                     playerTickets[payable(msg.sender)] = 0;
@@ -192,7 +194,7 @@ contract Raffle is Ownable {
         if (randomNumberRequested == false) {
             revert RaffleOngoing();
         }
-        
+
         uint i = 0;
         uint256 totalBought;
 
