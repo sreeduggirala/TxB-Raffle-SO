@@ -19,7 +19,7 @@ error WinnerAlreadyChosen();
 error OnlyNFTOwnerCanAccess();
 error NoBalance();
 error TooShort();
-error OnlyforSupraOracles();
+error OnlySupraOracles();
 
 interface ISupraRouter {
     function generateRequest(
@@ -50,6 +50,7 @@ contract Raffle is Ownable {
     //SupraOracles Content
     ISupraRouter internal supraRouter;
     address supraAddress = address(0xE1Ac002c6149585a6f499e6C2A03f15491Cb0D04); //Initialized to ETH Goerli
+    uint256 internal randomNumber;
     bool public randomNumberRequested;
 
     // Player Content
@@ -115,7 +116,7 @@ contract Raffle is Ownable {
 
     // Enter the NFT raffle
     function enterRaffle(uint256 _numTickets) external payable nftHeld {
-        if (block.timestamp > endTime || block.timestamp < startTime) {
+        if (block.timestamp > endTime) {
             revert RaffleNotOpen();
         }
 
@@ -127,37 +128,43 @@ contract Raffle is Ownable {
             revert InsufficientAmount();
         }
 
+        //adds player to player array only if it is not in there already
+        bool found = false;
+        for(uint256 i = 0; i < players.length; i++) {
+            if(players[i] == payable(msg.sender)) {
+                found = true;
+                break;
+            }
+        }
+        if(!found) {
+            players.push(payable(msg.sender));
+        }
+        
+
         playerTickets[msg.sender] += _numTickets;
-        players.push(payable(msg.sender));
 
         emit RaffleEntered(msg.sender, _numTickets);
     }
 
     function exitRaffle(uint256 _numTickets) external nftHeld vrfCalled {
-        if (
-            playerTickets[msg.sender] < _numTickets ||
-            playerTickets[msg.sender] == 0
-        ) {
+        if (playerTickets[msg.sender] < _numTickets || playerTickets[msg.sender] == 0) {
             revert InsufficientTicketsBought();
         }
 
-        if (_numTickets == 0) {
-            revert InvalidTicketAmount();
-        }
-        uint256 i = 0;
-        while (i < players.length) {
-            if (players[i] != msg.sender) {
-                i++;
-            } else {
-                payable(msg.sender).transfer(ticketFee * _numTickets);
-                playerTickets[msg.sender] -= _numTickets;
-
-                if (playerTickets[msg.sender] == 0) {
+        //if refunding all, remove from array and set mapping to zero, othewise just decrement mapping
+        if(playerTickets[msg.sender] == _numTickets) {
+            for(uint256 i = 0; i < players.length; i++) {
+                if(players[i] == payable(msg.sender)) {
                     players[i] = players[players.length - 1];
                     players.pop();
+                    playerTickets[payable(msg.sender)] = 0;
                 }
             }
+        } else {
+            playerTickets[payable(msg.sender)] -= _numTickets;
         }
+
+        payable(msg.sender).transfer(ticketFee * _numTickets);
 
         emit RaffleRefunded(msg.sender, _numTickets);
     }
@@ -175,7 +182,7 @@ contract Raffle is Ownable {
         uint256[] memory _rngList
     ) external nftHeld enoughTickets {
         if (msg.sender != supraAddress) {
-            revert OnlyforSupraOracles();
+            revert OnlySupraOracles();
         }
 
         if (address(this).balance == 0) {
@@ -185,7 +192,7 @@ contract Raffle is Ownable {
         if (randomNumberRequested == false) {
             revert RaffleOngoing();
         }
-
+        
         uint i = 0;
         uint256 totalBought;
 
@@ -221,6 +228,7 @@ contract Raffle is Ownable {
         while (i < players.length) {
             payable(players[i]).transfer(ticketFee * playerTickets[players[i]]);
             players[i] = players[players.length - 1];
+            i++;
         }
     }
 }
