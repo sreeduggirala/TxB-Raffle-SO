@@ -43,6 +43,7 @@ contract Raffle is Ownable {
     uint256 public immutable startTime;
     uint256 public immutable endTime;
     uint256 public immutable minTickets;
+    uint256 public ticketsBought;
     address public immutable nftContract;
     uint256 public immutable nftID;
     address payable winner;
@@ -133,7 +134,7 @@ contract Raffle is Ownable {
             revert InsufficientAmount();
         }
 
-        //adds player to player array only if it is not in there already
+        // Only adds player to players array if not already present
         bool found = false;
         for (uint256 i = 0; i < players.length; i++) {
             if (players[i] == payable(msg.sender)) {
@@ -141,11 +142,20 @@ contract Raffle is Ownable {
                 break;
             }
         }
+
         if (!found) {
             players.push(payable(msg.sender));
         }
 
         playerTickets[msg.sender] += _numTickets;
+
+        uint i = 0;
+        uint256 totalBought;
+        while (i < players.length) {
+            totalBought += playerTickets[players[i]];
+            i++;
+        }
+        ticketsBought = totalBought;
 
         emit RaffleEntered(msg.sender, _numTickets);
     }
@@ -200,16 +210,7 @@ contract Raffle is Ownable {
             revert RaffleOngoing();
         }
 
-        uint i = 0;
-        uint256 totalBought;
-
-        //calculates total tickets bought
-        while (i < players.length) {
-            totalBought += playerTickets[players[i]];
-            i++;
-        }
-
-        randomNumber = _rngList[0] % totalBought;
+        randomNumber = _rngList[0] % ticketsBought;
         uint256 ii;
         while (ii < players.length) {
             randomNumber -= playerTickets[players[ii]];
