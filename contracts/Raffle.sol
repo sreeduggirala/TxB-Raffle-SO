@@ -235,7 +235,6 @@ contract Raffle is Ownable {
         uint256 i = 0;
         while (i < players.length) {
             payable(players[i]).transfer(ticketFee * playerTickets[players[i]]);
-            players[i] = players[players.length - 1];
             i++;
         }
     }
