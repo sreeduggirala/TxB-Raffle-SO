@@ -224,9 +224,9 @@ contract Raffle is Ownable {
             }
         }
 
-        payable(nftOwner).transfer((address(this).balance * 975) / 1000);
+        payable(nftOwner).transfer((address(this).balance * 97) / 100);
         IERC721(nftContract).safeTransferFrom(address(this), winner, nftID);
-        payable(owner()).transfer((address(this).balance)); // 2.5% commission of ticket fees
+        payable(owner()).transfer((address(this).balance)); // 3% commission of ticket fees
         emit RaffleWon(nftID, winner, randomNumber);
     }
 
