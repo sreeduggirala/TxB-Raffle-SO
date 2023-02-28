@@ -59,9 +59,10 @@ contract Raffle is Ownable {
     mapping(address => uint256) public playerTickets;
 
     // Events
-    event RaffleEntered(address indexed player, uint256 numPurchased);
-    event RaffleRefunded(address indexed player, uint256 numRefunded);
-    event RaffleWinner(address indexed winner);
+    event RaffleEntered(address indexed nftID, address indexed player, uint256 numPurchased);
+    event RaffleRefunded(address indexed nftID, address indexed player, uint256 numRefunded);
+    event RaffleDeleted(address indexed nftID, address nftOwner);
+    event RaffleWon(address indexed nftID, address indexed winner, uint256 randomNumber);
 
     constructor(
         address payable _nftOwner,
@@ -183,7 +184,7 @@ contract Raffle is Ownable {
 
         payable(msg.sender).transfer(ticketFee * _numTickets);
 
-        emit RaffleRefunded(msg.sender, _numTickets);
+        emit RaffleRefunded(nftID, msg.sender, _numTickets);
     }
 
     function requestRandomNumber(
@@ -226,7 +227,7 @@ contract Raffle is Ownable {
         payable(nftOwner).transfer((address(this).balance * 975) / 1000);
         IERC721(nftContract).safeTransferFrom(address(this), winner, nftID);
         payable(owner()).transfer((address(this).balance)); // 2.5% commission of ticket fees
-        emit RaffleWinner(winner);
+        emit RaffleWon(nftID, winner, randomNumber);
     }
 
     function deleteRaffle() external onlynftOwner nftHeld vrfCalled {
@@ -237,5 +238,7 @@ contract Raffle is Ownable {
             payable(players[i]).transfer(ticketFee * playerTickets[players[i]]);
             i++;
         }
+
+        event RaffleDeleted(nftID, nftOwner);
     }
 }
