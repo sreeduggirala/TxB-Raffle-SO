@@ -158,7 +158,7 @@ contract Raffle is Ownable {
         }
         ticketsBought = totalBought;
 
-        emit RaffleEntered(msg.sender, _numTickets);
+        emit RaffleEntered(nftID, msg.sender, _numTickets);
     }
 
     function exitRaffle(uint256 _numTickets) external nftHeld vrfCalled {
