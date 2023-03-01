@@ -5,7 +5,11 @@ pragma solidity 0.8.18;
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+<<<<<<< HEAD
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+=======
+import "@openzeppelin/contracts/utils/math/SafeMath.sol"
+>>>>>>> 2ab8fc8874dbfc9bf340e6ffd77b8fed647c04a2
 
 // Custom Errors
 error InsufficientAmount();
