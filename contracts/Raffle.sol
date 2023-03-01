@@ -5,7 +5,7 @@ pragma solidity 0.8.18;
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/contracts/utils/math/SafeMath.sol"
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 // Custom Errors
 error InsufficientAmount();
@@ -21,6 +21,7 @@ error OnlyNFTOwnerCanAccess();
 error NoBalance();
 error TooShort();
 error OnlySupraOracles();
+error NotYourNFT();
 
 interface ISupraRouter {
     function generateRequest(
@@ -94,7 +95,9 @@ contract Raffle is Ownable {
         uint256 _nftID,
         address _supraAddress
     ) Ownable() {
-        require(IERC721(_nftContract).ownerOf(_nftID) == _nftOwner);
+        if (IERC721(_nftContract).ownerOf(_nftID) == _nftOwner) {
+            revert NotYourNFT();
+        }
         nftOwner = payable(_nftOwner);
         ticketFee = _ticketFee;
         startTime = block.timestamp + _timeUntilStart;
