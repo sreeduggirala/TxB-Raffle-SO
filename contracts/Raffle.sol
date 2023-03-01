@@ -93,6 +93,7 @@ contract Raffle is Ownable {
         uint256 _nftID,
         address _supraAddress
     ) Ownable() {
+        require(IERC721(_nftContract).ownerOf(_nftID) == _nftOwner);
         nftOwner = payable(_nftOwner);
         ticketFee = _ticketFee;
         startTime = block.timestamp + _timeUntilStart;
@@ -156,7 +157,8 @@ contract Raffle is Ownable {
 
         // Only adds player to players array if not already present
         bool found = false;
-        for (uint256 i = 0; i < players.length; i++) {
+        uint256 i = 0;
+        for (i = 0; i < players.length; i++) {
             if (players[i] == payable(msg.sender)) {
                 found = true;
                 break;
@@ -169,14 +171,14 @@ contract Raffle is Ownable {
 
         playerTickets[msg.sender] += _numTickets;
 
-        uint256 i = 0;
+        i = 0;
         uint256 totalBought;
         while (i < players.length) {
             totalBought += playerTickets[players[i]];
             i++;
         }
-        ticketsBought = totalBought;
 
+        ticketsBought = totalBought;
         emit RaffleEntered(nftContract, nftID, msg.sender, _numTickets);
     }
 

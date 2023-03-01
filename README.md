@@ -18,6 +18,6 @@ TxB Raffle is an NFT raffling application with ticket purchase/refund and prize 
 1. ERC-20 and ERC-1155 raffles
 2. Token-gated raffles
 
-Note: https://github.com/sreeduggirala/TxB-Raffle contains the Chainlink version for supported networks.
+[Chainlink Version](https://github.com/sreeduggirala/TxB-Raffle)
 
 This will be initiatlized to Ethereum Goerli Testnet until Shardeum has VRF support.
