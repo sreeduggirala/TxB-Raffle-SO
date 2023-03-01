@@ -59,10 +59,29 @@ contract Raffle is Ownable {
     mapping(address => uint256) public playerTickets;
 
     // Events
-    event RaffleEntered(address indexed nftID, address indexed player, uint256 numPurchased);
-    event RaffleRefunded(address indexed nftID, address indexed player, uint256 numRefunded);
-    event RaffleDeleted(address indexed nftID, address nftOwner);
-    event RaffleWon(address indexed nftID, address indexed winner, uint256 randomNumber);
+    event RaffleEntered(
+        address indexed nftContract,
+        uint256 nftID,
+        address indexed player,
+        uint256 numPurchased
+    );
+    event RaffleRefunded(
+        address indexed nftContract,
+        uint256 nftID,
+        address indexed player,
+        uint256 numRefunded
+    );
+    event RaffleDeleted(
+        address indexed nftContract,
+        uint256 nftID,
+        address nftOwner
+    );
+    event RaffleWon(
+        address indexed nftContract,
+        uint256 nftID,
+        address indexed winner,
+        uint256 randomNumber
+    );
 
     constructor(
         address payable _nftOwner,
@@ -150,7 +169,7 @@ contract Raffle is Ownable {
 
         playerTickets[msg.sender] += _numTickets;
 
-        uint i = 0;
+        uint256 i = 0;
         uint256 totalBought;
         while (i < players.length) {
             totalBought += playerTickets[players[i]];
@@ -158,7 +177,7 @@ contract Raffle is Ownable {
         }
         ticketsBought = totalBought;
 
-        emit RaffleEntered(nftID, msg.sender, _numTickets);
+        emit RaffleEntered(nftContract, nftID, msg.sender, _numTickets);
     }
 
     function exitRaffle(uint256 _numTickets) external nftHeld vrfCalled {
@@ -184,7 +203,7 @@ contract Raffle is Ownable {
 
         payable(msg.sender).transfer(ticketFee * _numTickets);
 
-        emit RaffleRefunded(nftID, msg.sender, _numTickets);
+        emit RaffleRefunded(nftContract, nftID, msg.sender, _numTickets);
     }
 
     function requestRandomNumber(
@@ -227,7 +246,7 @@ contract Raffle is Ownable {
         payable(nftOwner).transfer((address(this).balance * 97) / 100);
         IERC721(nftContract).safeTransferFrom(address(this), winner, nftID);
         payable(owner()).transfer((address(this).balance)); // 3% commission of ticket fees
-        emit RaffleWon(nftID, winner, randomNumber);
+        emit RaffleWon(nftContract, nftID, winner, randomNumber);
     }
 
     function deleteRaffle() external onlynftOwner nftHeld vrfCalled {
@@ -239,6 +258,6 @@ contract Raffle is Ownable {
             i++;
         }
 
-        event RaffleDeleted(nftID, nftOwner);
+        emit RaffleDeleted(nftContract, nftID, nftOwner);
     }
 }
