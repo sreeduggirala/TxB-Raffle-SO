@@ -4,9 +4,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'imperial-red': '#E43E40',
-        'jet':'#2A2A2A',
-        'af-white':'#F5F5F7',
+        'eerie-black': '#202020',
+        'jet': '#2A2A2A',
+        'imperial-red': '#E84242',
+        'white-smoke': '#F4F4F4',
+        'picton-blue':'#35B1FD',
       },
     },
   },

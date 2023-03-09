@@ -3,12 +3,9 @@
 pragma solidity 0.8.18;
 
 import "./Raffle.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Custom Errors
 error InvalidAmount();
-error InsufficientLINKBalance();
-error InsufficientLINKAllowance();
 
 contract RaffleFactory is Ownable {
     address public supraAddress =
@@ -33,7 +30,7 @@ contract RaffleFactory is Ownable {
         uint256 _ticketFee,
         uint256 _minTickets
     ) external {
-        if (_ticketFee <= 0 || _minTickets == 0) {
+        if (_ticketFee <= 0 || _minTickets <= 0 || _duration <= 0) {
             revert InvalidAmount();
         }
 
