@@ -1,6 +1,6 @@
-# TxB Raffle (SupraOracle Version)
+# Covet (SupraOracle Version)
 
-TxB Raffle is an NFT raffling application with ticket purchase/refund and prize disbursement capabilities; random winner selection is ensured via verifiable random functions (VRFs).
+Covet is an NFT raffling application with ticket purchase/refund and prize disbursement capabilities; random winner selection is ensured via verifiable random functions (VRFs).
 
 # Key Features
 
