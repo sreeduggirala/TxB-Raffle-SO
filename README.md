@@ -1,4 +1,4 @@
-# Covet (SupraOracle Version)
+# Covet
 
 Covet is an NFT raffling application with ticket purchase/refund and prize disbursement capabilities; random winner selection is ensured via verifiable random functions (VRFs).
 
